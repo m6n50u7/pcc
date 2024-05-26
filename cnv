@@ -1,0 +1,5 @@
+size=$(identify "$1" | cut -d " " -f 3)
+convert "$1" -depth 8 -quality 100 image.rgb
+pcc image.rgb $2 $3 $4
+convert -depth 8 -size $size rgb:image.rgb -quality 100 $(dirname "$1")/result.png
+rm image.rgb

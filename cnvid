@@ -1,0 +1,15 @@
+size=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 $1)
+fps=$(ffprobe -v error -select_streams v -of default=noprint_wrappers=1:nokey=1 -show_entries stream=r_frame_rate $1 | cut -d "/" -f 1)
+mkdir frames
+echo extracting frames
+ffmpeg -hide_banner -i $1 -qscale:v 4 -vf "fps=$fps" -pix_fmt rgb24 -vcodec rawvideo "frames/frame%5d.png"
+echo recoloring frames
+for frame in frames/*
+do
+pcc $frame $2 $3 $4
+done
+echo repacking frames
+#ffmpeg -hide_banner -framerate $fps -i frames/frame%05d.png -c:v libx264 -r $fps output.mp4
+ffmpeg -hide_banner -r $fps -s $size -pix_fmt rgb24 -vcodec rawvideo -i "frames/frame%5d.png" -qscale:v 4 -vcodec mpeg4 $(dirname $1)/video.mp4
+echo cleaning garbage
+rm -rf frames
