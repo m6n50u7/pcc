@@ -56,7 +56,7 @@ int str2int(char string[])
 	{
 		if(string[ln - i] != '-')
 		{
-			num += power * char2int(string[ln - i]);
+			num += power * hexchar2int(string[ln - i]);
 			power *= 10;
 		}
 	}
